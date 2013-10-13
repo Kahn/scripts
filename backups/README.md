@@ -3,14 +3,16 @@ backups
 
 Intial Setup
 
- 1) As root create a new keypair
-  $ gpg2 --gen-key
- 2) Use RSA and RSA key types
- 3) Use keylength 2048 or greater
- 4) Specify 2y for key expiration
- 5) Specify real name as your hosts fqdn
- 6) Specify email as hostname@domain
- 7) Specify comment as offsite backups
+1. As root create a new keypair
+```
+gpg2 --gen-key
+```
+2. Use RSA and RSA key types
+3. Use keylength 2048 or greater
+4. Specify 2y for key expiration
+5. Specify real name as your hosts fqdn
+6. Specify email as hostname@domain
+7. Specify comment as offsite backups
 
 Usage
 
