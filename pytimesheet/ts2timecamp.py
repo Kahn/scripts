@@ -181,7 +181,7 @@ def timecampTimeEntry(content, date):
     payload = {'task_id': taskid, 'duration': duration, 'date': date, 'note': baumatch.group(1), 'start_time': start, 'end_time': stop}
 
   try:
-      r = requests.post('https://www.timecamp.com/third_party/api/time_entry/format/json/api_token/'+apikey, data=payload)
+      r = requests.post('https://www.timecamp.com/third_party/api/entries/format/json/api_token/'+apikey, data=payload)
   except:
       print "Unexpected error:", sys.exc_info()[0]
       raise
