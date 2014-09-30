@@ -33,6 +33,7 @@ try:
     import json
     import requests
     import re
+    import argparse
     from pysed import replace, append, lines
     from pprint import pprint
 except:
@@ -41,8 +42,28 @@ except:
 
 logger.debug('Started ts2timecamp')
 
+parser = argparse.ArgumentParser()
+#parser.add_argument("-k", "--key", help="Timecamp API key",action="store_true")
+parser.add_argument("key")
+args = parser.parse_args()
+
+if not args.key:
+  logger.critical('No API key provided!')
+  sys.exit(1)
+
 # Timecamp API
-apikey = "API KEY HERE"
+apikey = args.key
+
+# Test a request to validate the API
+try:
+    r = requests.get('https://www.timecamp.com/third_party/api/tasks/format/json/api_token/'+apikey)
+except:
+    print "Unexpected error:", sys.exc_info()[0]
+    raise
+logger.debug('Initial logon return code: {0}'.format(r.status_code))
+if r.status_code is not 200:
+  logger.error('Failed to query timecamp API: {0}'.format(r.text))
+
 
 # Create date variables
 today = datetime.date.today()
@@ -77,7 +98,7 @@ def timecampTaskID(taskname):
   if timecampTaskID == False:
     payload = {'name': taskname, 'keywords': 'ts2timecamp', 'parent_id': 0}
     try:
-        r = requests.post('https://www.timecamp.com/third_party/api/tasks/api_token/'+apikey, data=payload)
+        r = requests.post('https://www.timecamp.com/third_party/api/tasks/format/json/api_token/'+apikey, data=payload)
     except:
         print "Unexpected error:", sys.exc_info()[0]
         raise
@@ -149,14 +170,14 @@ def parseLine(content, date):
 
   # Create time entry payloads
   if taskmatch:
-    payload = {'task_id':taskid,'duration':duration,'date':date,'note':taskmatch.group(2),'start_time':start,'end_time':stop}
+    payload = {'task_id':taskid,'duration': duration,'date':date,'note':taskmatch.group(2),'start_time':start,'end_time':stop}
   if ticketmatch:
     payload = {'task_id': taskid, 'duration': duration, 'date': date, 'note': ticketmatch.group(2), 'start_time': start, 'end_time': stop}
   if baumatch:
     payload = {'task_id': taskid, 'duration': duration, 'date': date, 'note': baumatch.group(1), 'start_time': start, 'end_time': stop}
 
   try:
-      r = requests.post('https://www.timecamp.com/third_party/api/time_entry/api_token/'+apikey, data=payload)
+      r = requests.post('https://www.timecamp.com/third_party/api/time_entry/format/json/api_token/'+apikey, data=payload)
   except:
       print "Unexpected error:", sys.exc_info()[0]
       raise
