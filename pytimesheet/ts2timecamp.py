@@ -26,6 +26,7 @@ logger.addHandler(fh)
 logger.addHandler(ch)
 
 try:
+    import os
     import sys
     import pyinotify
     import datetime
@@ -34,7 +35,7 @@ try:
     import requests
     import re
     import argparse
-    from pysed import replace, append, lines
+#    from pysed import replace, append, lines
     from pprint import pprint
 except:
     print "Unexpected error:", sys.exc_info()[0]
@@ -123,7 +124,7 @@ def timecampTaskID(taskname):
   logger.debug('timecampTask returns ID: %s' % timecampTaskID)
   return timecampTaskID
 
-def parseLine(content, date):
+def timecampTimeEntry(content, date):
   '''Parse lines and return timecamp time_entry dict'''
   logger.debug('parseLine content: %s' % content)
   match = re.match(r'(.*) - (.*) \* (.*)', content, re.M|re.I)
@@ -131,7 +132,10 @@ def parseLine(content, date):
     start = time.strptime(match.group(1)+":00", '%H:%M:%S')
     stop = time.strptime(match.group(2)+":00", '%H:%M:%S')
   except AttributeError:
-      return 0
+      return False
+  except ValueError:
+      logger.info('Ignored line: {0}'.format(content))
+      return False
   except:
     print "Unexpected error:", sys.exc_info()[0]
     raise
@@ -182,9 +186,13 @@ def parseLine(content, date):
       print "Unexpected error:", sys.exc_info()[0]
       raise
 
+  j = r.json()
+
   logger.debug('Time entry payload: %s' % payload)
   logger.debug('Time entry response code: %s' % r.status_code)
-  logger.debug('Time entry response: %s' % r.text)
+  logger.debug('Time entry response: %s' % j['entry_id'])
+
+  return str(j['entry_id'])
 
 # Start inotify loop
 
@@ -206,10 +214,28 @@ class EventHandler(pyinotify.ProcessEvent):
           print "Unexpected error:", sys.exc_info()[0]
           raise
 
-        for line in file:
-          parseLine(line,timecamp_date)
-
+        # Buffer file content
+        logger.info('Opened file: {0}'.format(event.pathname))
+        data = file.readlines()
         file.close()
+
+        # Reopen file for overwriting
+        try:
+            file = open(event.pathname+'.tmp','w')
+        except:
+          print "Unexpected error:", sys.exc_info()[0]
+          raise
+        
+        for line in data:
+          entry = timecampTimeEntry(line,timecamp_date)
+          if entry:
+            logger.debug('Updated line: {0}'.format(entry+'|'+line))
+            file.write(entry+'|'+line)
+          else:
+            logger.debug('Existing line preseved: {0}'.format(line))
+            file.write(line)
+        file.close()
+        os.rename(event.pathname+'.tmp',event.pathname)
 
 handler = EventHandler()
 notifier = pyinotify.Notifier(wm, handler)
