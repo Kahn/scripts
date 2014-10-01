@@ -44,12 +44,16 @@ except:
 logger.debug('Started ts2timecamp')
 
 parser = argparse.ArgumentParser()
-#parser.add_argument("-k", "--key", help="Timecamp API key",action="store_true")
-parser.add_argument("key")
+parser.add_argument("key", help="Timecamp API key")
+parser.add_argument("dir", help="Directory to timesheets")
 args = parser.parse_args()
 
 if not args.key:
   logger.critical('No API key provided!')
+  sys.exit(1)
+
+if not args.dir:
+  logger.critical('No timesheet directory!')
   sys.exit(1)
 
 # Timecamp API
@@ -72,7 +76,7 @@ isoCalendar = today.isocalendar()
 currentYearNumber = str(isoCalendar[0])
 currentWeekNumber = str(isoCalendar[1])
 
-dataDir = "."
+dataDir = args.dir
 currentWeekDir = dataDir+'/'+currentYearNumber+'/'+currentWeekNumber
 currentDayFile = currentWeekDir+'/'+today.isoformat()
 
