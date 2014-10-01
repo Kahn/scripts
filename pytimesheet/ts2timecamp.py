@@ -12,17 +12,17 @@ import logging
 logger = logging.getLogger('ts2timecamp')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fh = logging.FileHandler('ts2timecamp.log')
-fh.setLevel(logging.DEBUG)
+#fh = logging.FileHandler('ts2timecamp.log')
+#fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+ch.setLevel(logging.ERROR)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
+#fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 # add the handlers to the logger
-logger.addHandler(fh)
+#logger.addHandler(fh)
 logger.addHandler(ch)
 
 try:
@@ -41,11 +41,10 @@ except:
     print "Unexpected error:", sys.exc_info()[0]
     raise
 
-logger.debug('Started ts2timecamp')
-
 parser = argparse.ArgumentParser()
 parser.add_argument("key", help="Timecamp API key")
 parser.add_argument("dir", help="Directory to timesheets")
+parser.add_argument("-v", "--verbose", help="Verbose console logging",action="store_true")
 args = parser.parse_args()
 
 if not args.key:
@@ -55,6 +54,9 @@ if not args.key:
 if not args.dir:
   logger.critical('No timesheet directory!')
   sys.exit(1)
+
+if args.verbose:
+  ch.setLevel(logging.DEBUG)
 
 # Timecamp API
 apikey = args.key
