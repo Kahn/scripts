@@ -245,6 +245,6 @@ class EventHandler(pyinotify.ProcessEvent):
 
 handler = EventHandler()
 notifier = pyinotify.Notifier(wm, handler)
-wdd = wm.add_watch(currentWeekDir, mask, rec=True)
+wdd = wm.add_watch(dataDir, mask, rec=True)
 
 notifier.loop()
