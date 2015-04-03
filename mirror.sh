@@ -28,9 +28,18 @@ for target in "${TARGETS[@]}";
 do
   :
   DOMAIN=`echo $target | cut -d "/" -f 3`
-  echo $target
-  echo $DOMAIN
-  echo $OUTPUTDIR
-  wget -r -c -N -np -q --user-agent="mirror.sh - http://repo.cycloptivity.net/README" --reject "index.html*" --reject "robots.txt" -D $DOMAIN $target -P $OUTPUTDIR
+  wget -r -c -N -np -q --user-agent="mirror.sh - http://repo.cycloptivity.net/README" --reject "index.html*","robots.txt" -D $DOMAIN $target -P $OUTPUTDIR
+  # Calculate date post download not prior
+  DATE=`date --utc +%FT%TZ`
+  if [ -e $OUTPUTDIR/$DOMAIN/TIMESTAMP ]
+  then  
+    rm $OUTPUTDIR/$DOMAIN/TIMESTAMP
+  fi
+  if [ -e $OUTPUTDIR/$DOMAIN/robots.txt ]
+  then
+    rm $OUTPUTDIR/$DOMAIN/robots.txt
+  fi
+
   echo $DATE > $OUTPUTDIR/$DOMAIN/TIMESTAMP
+  echo "Mirror completed: $DOMAIN at $DATE" | logger
 done
