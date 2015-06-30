@@ -50,20 +50,19 @@ determine_ip_tier() {
 		return
 	fi
 	
-	if [ "$month_bytes" -lt 20000000000 ]; then
-		#tier 1 unless >=7GB this week
-		if [ "$week_bytes" -le 7000000000 ]; then
+	if [ "$month_bytes" -lt 128000000 ]; then
+		if [ "$week_bytes" -le 64000000 ]; then
 			echo "tier1"
 		else
 			echo "tier2"
 		fi
-	elif [ "$month_bytes" -lt 40000000000 ]; then
+	elif [ "$month_bytes" -lt 250000000 ]; then
 		echo "tier2"
-	elif [ "$month_bytes" -lt 50000000000 ]; then
+	elif [ "$month_bytes" -lt 500000000 ]; then
 		echo "tier3"
-	elif [ "$month_bytes" -lt 60000000000 ]; then
+	elif [ "$month_bytes" -lt 750000000 ]; then
 		echo "tier4"
-	elif [ "$month_bytes" -lt 80000000000 ]; then
+	elif [ "$month_bytes" -lt 1000000000 ]; then
 		echo "tier5"
 	else
 		echo "tier6"
@@ -76,28 +75,28 @@ process_ip() {
 	IP="$1"
 	tier=`determine_ip_tier $IP`
 	case "$tier" in
-		tier1) #full speed
-			output_speed=100mbit
-			input_speed=100mbit
-			;;
-		tier2) #10Mbps/1Mbps
-			output_speed=10mbit
-			input_speed=1mbit
-			;;
-		tier3) #5Mbps/512Kbps
-			output_speed=5mbit
-			input_speed=512kbit
-			;;
-		tier4) #5Mbps/512Kbps
-			output_speed=3mbit
+		tier1)
+			output_speed=4mbit
 			input_speed=384kbit
 			;;
-		tier5) #2MBps/128Kbps
+		tier2) 
 			output_speed=2mbit
+			input_speed=384kbit
+			;;
+		tier3) 
+			output_speed=1mbit
 			input_speed=256kbit
 			;;
-		tier6) #1MBps/128Kbps
-			output_speed=1mbit
+		tier4)
+			output_speed=512kbit
+			input_speed=256kbit
+			;;
+		tier5)
+			output_speed=256kbit
+			input_speed=128kbit
+			;;
+		tier6)
+			output_speed=128kbit
 			input_speed=128kbit
 			;;
 		*)
