@@ -32,21 +32,25 @@ I implemented this using a MikroTik RouterBOARD 951Ui-2HnD running OpenWRT 14.07
 
 #### Installing
 
-# SCP the **traffic-shaper.sh** to /root/ on your router
-# Set the executable bit on /root/traffic-shaper.sh
-# Add the initial run to **/etc/rc.local**
+1. SCP the **traffic-shaper.sh** to /root/ on your router
+1. Set the executable bit on /root/traffic-shaper.sh
+1. Add the initial run to **/etc/rc.local**
 
+    ```
     # Run traffic shaper
     sh /root/traffic-shaper.sh
     # Turn off red port 5 LED
     echo 0 > /sys/devices/virtual/gpio/gpio2/value
+    ```
 
-# Add a new cron entry
+1. Add a new cron entry
 
+    ```
     $ crontab -e
     0 0 1 * * sh /root/traffic-shaper.sh
+    ```
 
-# At this point reboot the router and confirm the script applies automatically at boot
+1. At this point reboot the router and confirm the script applies automatically at boot
 
 #### Checking individual quotas
 
