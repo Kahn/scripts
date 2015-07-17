@@ -38,7 +38,7 @@ I implemented this using a MikroTik RouterBOARD 951Ui-2HnD running OpenWRT 14.07
 
     ```
     # Run traffic shaper
-    sh /root/traffic-shaper.sh
+    ./root/traffic-shaper.sh
     # Turn off red port 5 LED
     echo 0 > /sys/devices/virtual/gpio/gpio2/value
     ```
