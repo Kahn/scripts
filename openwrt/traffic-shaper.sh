@@ -47,7 +47,7 @@ TC03_QUOTA=256000000
 # 512MB
 TC04_QUOTA=512000000
 # 1GB
-TC05_QUOTA=102400000
+TC05_QUOTA=1024000000
 # TC06 catches all clients exceeding $TC05_QUOTA
 
 # Reload firewall to clear previous quotas
